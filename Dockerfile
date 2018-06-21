@@ -1,11 +1,13 @@
 FROM alpine:3.7
 
-RUN apk --update add python py-setuptools py-pip && \
-    pip install elasticsearch-curator==5.5.4 && \
-    apk del py-pip && \
-    rm -rf /var/cache/apk/*
+ENV CURATOR_VERSION 5.5.4
 
-COPY entrypoint.sh /usr/bin/entrypoint.sh
-RUN chmod +x /usr/bin/entrypoint.sh
+RUN apk --update add python py-setuptools py-pip \
+    && pip install elasticsearch-curator==${CURATOR_VERSION} \
+    && apk del py-pip \
+    && rm -rf /var/cache/apk/*
 
-ENTRYPOINT ["/usr/bin/entrypoint.sh"]
+COPY curator-cron.sh /usr/bin/curator-cron.sh
+RUN chmod +x /usr/bin/curator-cron.sh
+
+CMD ["/usr/bin/curator-cron.sh"]

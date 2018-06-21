@@ -1,0 +1,46 @@
+version: "2.4"
+
+
+networks:
+
+  web-net:
+    driver: "bridge"
+
+
+services:
+
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:6.3.0"
+    environment:
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+    networks:
+      - "web-net"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+      nproc:
+        soft: 4096
+        hard: 4096
+    mem_limit: "5g"
+    restart: "on-failure"
+
+  curator:
+    build: "."
+    image: "arvacims/curator-cron:5.5.4"
+    networks:
+      - "web-net"
+    environment:
+      - "CURATOR_PERIOD=15min"
+      - "CURATOR_KEEP_DAYS=1"
+      - "CURATOR_INDEX_PREFIX=fluentd"
+      - "CURATOR_ELASTIC_HOST=elasticsearch"
+      - "CURATOR_ELASTIC_PORT=9200"
+    restart: "on-failure"
+    depends_on:
+      - "elasticsearch"
