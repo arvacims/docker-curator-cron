@@ -1,0 +1,18 @@
+---
+actions:
+  1:
+    action: delete_indices
+    description: >-
+      Delete indices older than 1 month
+    options:
+      ignore_empty_list: True
+      disable_action: False
+    filters:
+      - filtertype: age
+        source: creation_date
+        direction: older
+        unit: ${FILTER_KEEP_UNIT:months}
+        unit_count: ${FILTER_KEEP_UNIT_COUNT:3}
+      - filtertype: pattern
+        kind: prefix
+        value: ${FILTER_INDEX_PREFIX:fluentd}
