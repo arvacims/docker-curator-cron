@@ -2,8 +2,7 @@
 actions:
   1:
     action: delete_indices
-    description: >-
-      Delete indices older than 1 month
+    description: Delete indices by creation date
     options:
       ignore_empty_list: True
       disable_action: False

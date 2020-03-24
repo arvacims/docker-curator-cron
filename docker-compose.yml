@@ -10,7 +10,7 @@ networks:
 services:
 
   elasticsearch:
-    image: "docker.elastic.co/elasticsearch/elasticsearch"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.1.1"
     environment:
       - "discovery.type=single-node"
       - "bootstrap.memory_lock=true"
@@ -33,8 +33,6 @@ services:
   curator:
     build: "."
     image: "arvacims/curator-cron"
-    networks:
-      - "web-net"
     environment:
       - "CRON_PERIOD=15min"
       - "FILTER_KEEP_UNIT=months"
@@ -42,7 +40,11 @@ services:
       - "FILTER_INDEX_PREFIX=fluentd"
       - "ELASTIC_HOST=elasticsearch"
       - "ELASTIC_PORT=9200"
+      - "ELASTIC_USE_SSL=false"
+      - "ELASTIC_AUTH=user:pass"
       - "CURATOR_OPTIONS=--dry-run"
+    networks:
+      - "web-net"
     restart: "on-failure"
     depends_on:
       - "elasticsearch"
